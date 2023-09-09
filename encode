@@ -1,0 +1,20 @@
+#!/bin/bash
+
+gpg --list-secret-key --keyid-format LONG $1 > key-description
+gpg --armor --export-secret-key $1 > private-key.asc 
+# Split into 1Kb chunks
+split -b 1k private-key.asc splitkey-
+mkdir qrcodes
+for i in splitkey-*; do
+  qrencode -t svg -m 0 -l M -r $i -o "qrcodes/$i.svg"
+  rm $i
+done
+
+cat template.html | gomplate  > document.html
+prince document.html
+
+# Cleanup
+rm -r qrcodes
+rm document.html
+rm private-key.asc
+rm key-description

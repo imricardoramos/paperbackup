@@ -1,0 +1,6 @@
+#!/bin/bash
+
+for i in qrcodes/*; do
+  zbarimg --quiet --raw --oneshot $i >> private-key-decoded.asc
+done
+

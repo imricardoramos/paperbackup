@@ -1,0 +1,52 @@
+<html>
+  <head>
+    <style>
+      @page {
+        size: letter;
+        margin: 1cm;
+      }
+      body{
+        font-family: monospace;
+      }
+      .page{
+        break-before: page;
+      }
+      .title{
+        font-size: 2rem;
+        text-align: center;
+      }
+      .qr-codes-container{
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;     
+        justify-content: space-between;
+        text-align: center;
+      }
+      .qr-codes-container>div{
+        margin-top: 1rem;
+      }
+      .qr-code {
+        display: block;
+        width: 350px;
+        height: 350px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <pre>{{ file.Read "./key-description" | regexp.Replace ">" "&gt;" | regexp.Replace "<" "&lt;" }}</pre>
+      <pre style="font-size: 0.9rem;">{{ file.Read "./private-key.asc" }}</pre>
+    </div>
+    <div class="page">
+      <div class="qr-codes-container">
+        {{ $files := coll.Sort (file.ReadDir "./qrcodes/") }}
+        {{ range $index, $element := $files }}
+        <div>
+          <div>{{math.Add $index 1}}/{{len $files}}</div>
+          <img class="qr-code" src="./qrcodes/{{$element}}" />
+        </div>
+        {{end}}
+      </div>
+    </div>
+  </body>
+</html>
